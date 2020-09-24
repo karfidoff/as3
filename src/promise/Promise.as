@@ -1,4 +1,4 @@
-package promise {
+package com.groveware.exforma.mobile.script {
 import flash.utils.setTimeout;
 
 public class Promise {
@@ -174,8 +174,17 @@ public class Promise {
     return this.then(null, onRejection);
   }
 
-  public function finally():Promise {
-
+  public function always(alwaysFunction:Function):Promise {
+    if (!alwaysFunction) {
+      return this;
+    }
+    if (_state != PENDING) {
+      executeNext(alwaysFunction);
+      return this;
+    }
+    var child:Promise = new Promise(noop);
+    subscribe(child, alwaysFunction, alwaysFunction);
+    return child;
   }
 
   static public function noop(resolve:Function, reject:Function):void {
